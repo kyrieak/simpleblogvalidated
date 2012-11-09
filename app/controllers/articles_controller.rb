@@ -24,6 +24,10 @@ class ArticlesController < ApplicationController
       @order_by = "ob=title"
     end
 
+    if params.has_key?(:limit)
+      @articles = @articles.first(params[:limit].to_i)
+    end
+
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @articles }
