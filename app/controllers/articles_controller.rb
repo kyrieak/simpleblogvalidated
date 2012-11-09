@@ -2,7 +2,27 @@ class ArticlesController < ApplicationController
   # GET /articles
   # GET /articles.json
   def index
-    @articles = Article.all
+    # @articles = Article.ordered_by(params[:order_by])
+    logger.info {p params}
+    @order_by = "ob=title"
+
+    if params.has_key?(:ob)
+      logger.info {"found order-by"}
+      @articles = Article.order(params[:ob])
+
+      if params[:ob] == "title"
+        @order_by += " DESC"
+      end
+
+      if params[:ob] == "word_count"
+        @articles = Article.all.sort { |a, b| a.body.split(" ").count <=> b.body.split(" ").count }.reverse
+      end
+
+    else
+      logger.info {"no order-by"}
+      @articles = Article.all
+      @order_by = "ob=title"
+    end
 
     respond_to do |format|
       format.html # index.html.erb
