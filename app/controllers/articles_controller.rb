@@ -6,26 +6,19 @@ class ArticlesController < ApplicationController
     logger.info {p params}
     @order_by = "ob=title"
 
-    if params.has_key?(:ob)
-      logger.info {"found order-by"}
-      @articles = Article.order(params[:ob])
+    @articles = Article.scoped
 
-      if params[:ob] == "title"
-        @order_by += " DESC"
-      end
-
-      if params[:ob] == "word_count"
-        @articles = Article.all.sort { |a, b| a.body.split(" ").count <=> b.body.split(" ").count }.reverse
-      end
-
+    case params[:ob]
+    when "title"
+      @articles = @articles.order('title DESC')
+    when 'word_count'
+      @articles = @articles.order("LENGTH(body) - LENGTH(REPLACE(body, ' ', ''))  + 1 DESC")
     else
-      logger.info {"no order-by"}
-      @articles = Article.all
-      @order_by = "ob=title"
+      @articles = @articles.order('created_at DESC')
     end
 
-    if params.has_key?(:limit)
-      @articles = @articles.first(params[:limit].to_i)
+    if params[:limit]
+      @articles = Article.only(params[:limit].to_i)
     end
 
     respond_to do |format|
@@ -66,6 +59,11 @@ class ArticlesController < ApplicationController
   def create
     # @article = Article.new(params[:article])
     @article = Article.new(:title => params[:article][:title], :body => params[:article][:body])
+
+    @article = Article.new(params[:article])
+
+    # @article.title = params[:article][:title]
+    # @article.body  = params[:article][:body]
 
     respond_to do |format|
       if @article.save

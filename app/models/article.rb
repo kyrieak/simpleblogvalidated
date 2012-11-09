@@ -3,14 +3,15 @@ class Article < ActiveRecord::Base
 
   attr_accessible :body, :title
 
-  # def self.ordered_by(params)
-  #   case params
-  #     when 'title' then     Article.order('title')
-  #     # when 'title' then     @articles = Article.find(:all, :order => 'title')
-  #     when :published then Article.order('created_at DESC')
-  #     when :word_count then Article.order('word_count')
-  #     else                  Article.all
-  #   end
+  # def self.by_user(user)
+  #   where(:user_id => user.id)
   # end
-
+  #
+  # def self.by_recency
+  #   order(:created_at).reverse_order
+  # end
+  #
+  def self.only(lim)
+    limit(lim)
+  end
 end
