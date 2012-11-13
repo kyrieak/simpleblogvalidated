@@ -1,16 +1,14 @@
 class Article < ActiveRecord::Base
   has_many :comments, dependent: :destroy
 
-  attr_accessible :body, :title
+  attr_accessible :body, :title, :comment, :kitten_hater
 
-  # def self.by_user(user)
-  #   where(:user_id => user.id)
-  # end
-  #
-  # def self.by_recency
-  #   order(:created_at).reverse_order
-  # end
-  #
+  validates :title, :presence => true
+  validates :body, :presence => true
+  validates :body, :exclusion => {:in => %w(kitten)}
+
+
+
   def self.only(lim)
     limit(lim)
   end
